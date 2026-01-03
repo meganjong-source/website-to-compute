@@ -1,56 +1,629 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-  <!-- 
-      This is an HTML comment
-      You can write text in a comment and the content won't be visible in the page
-    -->
-
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="https://glitch.com/favicon.ico" />
-
-  <!--
-      This is the page head - it contains info the browser uses
-      Like the title, which appears on the browser tab but not inside the page
-      Further down you'll see the content that displays in the page
-    -->
-  <title>Hello World!</title>
-
-  <!-- The website stylesheet -->
-  <link rel="stylesheet" href="/style.css" />
-
-  <!-- The website JavaScript file -->
-  <script src="/script.js" defer></script>
+    <title>Capybara Garden</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Cute Pastel Colors */
+        :root {
+            --mint: #A2E4B8;
+            --cream: #FFF9F0;
+            --peach: #FFD8BE;
+            --brown: #8B4513;
+            --sky: #87CEEB;
+            --gray: #5D5D5A;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Comic Neue', cursive;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--mint), var(--sky));
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Screen Container */
+        .screen {
+            display: none;
+            background: var(--cream);
+            border-radius: 25px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 5px solid white;
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            border-radius: 50px;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn.active {
+            background: var(--peach);
+        }
+        
+        /* Timer Screen */
+        .timer-circle {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: conic-gradient(var(--mint) 0deg, #eee 0deg);
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 10px solid white;
+            box-shadow: 0 0 20px rgba(162, 228, 184, 0.5);
+        }
+        
+        .timer-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--gray);
+        }
+        
+        .preset-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .preset-btn {
+            background: var(--sky);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .preset-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .control-btn {
+            background: var(--mint);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.1);
+        }
+        
+        /* Garden Screen */
+        .garden-area {
+            min-height: 400px;
+            background: linear-gradient(to bottom, #E8F5E9, #C8E6C9);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .capybara {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 80px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .item-slot {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 3px dashed var(--peach);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            background: rgba(255,255,255,0.5);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        /* Store Screen */
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .store-item {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+            border: 3px solid transparent;
+        }
+        
+        .store-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--mint);
+        }
+        
+        .item-emoji {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .item-price {
+            color: var(--brown);
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .buy-btn {
+            background: var(--peach);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .celebrate {
+            animation: celebrate 0.5s ease 3;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .timer-circle { width: 200px; height: 200px; }
+            .timer-display { font-size: 36px; }
+        }
+    </style>
 </head>
-
 <body>
-  <!--
-      The body includes the content you see in the page
-      Each element is defined using tags, like this <div></div>
-      The attributes like class="wrapper" let us style elements in the CSS
-    -->
-  <div class="wrapper">
-    <div class="content" role="main">
-      <h1 class="title">Oh hi website!</h1>
-      <img src="/cool-website.svg" class="illustration" alt="cool website" />
-      <div class="instructions">
-        <p>
-          Fork <a href="https://github.com/glitchdotcom/website-to-compute">this project</a> and open it in a GitHub Codespace.
-        </p>
-        <p> Follow the steps in the README to deploy your new website to Fastly in a few steps!
-        </p>
-
-      </div>
-
-      <footer class="footer">
-        <div>
-          <a class="remix" href="https://github.com/glitchdotcom/website-to-compute">🚧 Get your own site</a>
-        </div>
-      </footer>
+    <!-- Navigation -->
+    <div class="nav">
+        <button class="nav-btn active" onclick="showScreen('timer')">⏱️ Timer</button>
+        <button class="nav-btn" onclick="showScreen('garden')">🌿 Garden</button>
+        <button class="nav-btn" onclick="showScreen('store')">🏪 Store</button>
     </div>
-  </div>
-</body>
+    
+    <!-- Timer Screen -->
+    <div id="timer" class="screen active">
+        <h2 style="text-align: center; color: var(--gray); margin-bottom: 20px;">
+            Focus to build your capybara's home! 🦫
+        </h2>
+        
+        <div class="timer-circle" id="timerCircle">
+            <div class="timer-display" id="timerDisplay">25:00</div>
+        </div>
+        
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="setTimer(25)">25 min</button>
+            <button class="preset-btn" onclick="setTimer(50)">50 min</button>
+            <button class="preset-btn" onclick="setTimer(90)">90 min</button>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="control-btn" id="startBtn" onclick="startTimer()">Start Focus 🎯</button>
+            <button class="control-btn" style="background: #FF9999;" onclick="resetTimer()">Reset</button>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px; color: var(--gray);">
+            <p>Earn 10 🎋 bamboo coins for each completed session!</p>
+        </div>
+    </div>
+    
+    <!-- Garden Screen -->
+    <div id="garden" class="screen">
+        <div class="stats">
+            <div>🎋 Coins: <span id="coinCount">0</span></div>
+            <div>⏱️ Total Focus: <span id="totalTime">0</span> min</div>
+        </div>
+        
+        <div class="garden-area" id="gardenArea">
+            <!-- Item slots will be added here -->
+            <div class="capybara" id="capybara">🦫</div>
+        </div>
+        
+        <button class="control-btn" style="width: 100%;" onclick="showScreen('store')">
+            ➕ Add Items to Garden
+        </button>
+        
+        <p style="text-align: center; margin-top: 15px; color: var(--gray); font-size: 14px;">
+            Complete focus sessions to unlock cute items!
+        </p>
+    </div>
+    
+    <!-- Store Screen -->
+    <div id="store" class="screen">
+        <h2 style="color: var(--gray); margin-bottom: 10px;">Store 🛒</h2>
+        <p style="color: var(--gray); margin-bottom: 20px;">Your coins: <span id="storeCoins">0</span> 🎋</p>
+        
+        <div class="store-grid" id="storeItems">
+            <!-- Store items will be added here -->
+        </div>
+        
+        <button class="control-btn" style="width: 100%; margin-top: 20px;" onclick="showScreen('garden')">
+            ← Back to Garden
+        </button>
+    </div>
 
+    <script>
+        // ====================
+        // APP DATA
+        // ====================
+        let userData = {
+            coins: 0,
+            totalMinutes: 0,
+            unlockedItems: [],
+            gardenItems: []
+        };
+        
+        const storeItems = [
+            { id: 1, name: "Small House", emoji: "🏠", price: 50, slot: 1 },
+            { id: 2, name: "Oak Tree", emoji: "🌳", price: 30, slot: 2 },
+            { id: 3, name: "Flower Bed", emoji: "🌸", price: 20, slot: 3 },
+            { id: 4, name: "Pond", emoji: "🌊", price: 40, slot: 4 },
+            { id: 5, name: "Hammock", emoji: "🎪", price: 25, slot: 1 },
+            { id: 6, name: "Berry Bush", emoji: "🫐", price: 15, slot: 2 }
+        ];
+        
+        // ====================
+        // TIMER FUNCTIONALITY
+        // ====================
+        let timerInterval;
+        let timeLeft = 1500; // 25 minutes in seconds
+        let isRunning = false;
+        let currentTime = 1500;
+        
+        function setTimer(minutes) {
+            currentTime = minutes * 60;
+            timeLeft = currentTime;
+            updateTimerDisplay();
+            resetTimerCircle();
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update progress circle
+            const progress = 360 - ((timeLeft / currentTime) * 360);
+            document.getElementById('timerCircle').style.background = 
+                `conic-gradient(var(--mint) ${progress}deg, #eee ${progress}deg)`;
+        }
+        
+        function startTimer() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            document.getElementById('startBtn').textContent = "Pause ⏸️";
+            document.getElementById('startBtn').onclick = pauseTimer;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    completeTimer();
+                }
+            }, 1000);
+        }
+        
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('startBtn').textContent = "Resume ▶️";
+            document.getElementById('startBtn').onclick = startTimer;
+        }
+        
+        function resetTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            timeLeft = currentTime;
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = "Start Focus 🎯";
+            document.getElementById('startBtn').onclick = startTimer;
+            resetTimerCircle();
+        }
+        
+        function resetTimerCircle() {
+            document.getElementById('timerCircle').style.background = 
+                `conic-gradient(var(--mint) 0deg, #eee 0deg)`;
+        }
+        
+        function completeTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            
+            // Add coins and time
+            userData.coins += 10;
+            userData.totalMinutes += Math.floor(currentTime / 60);
+            
+            // Save data
+            saveData();
+            
+            // Update displays
+            updateCoinDisplay();
+            updateTotalTime();
+            
+            // Celebration!
+            document.getElementById('timerCircle').classList.add('celebrate');
+            document.getElementById('timerDisplay').textContent = "🎉 Done!";
+            
+            // Show celebration message
+            alert(`Great job! You earned 10 🎋 bamboo coins!\nTotal coins: ${userData.coins}`);
+            
+            // Reset button
+            document.getElementById('startBtn').textContent = "Start Focus 🎯";
+            document.getElementById('startBtn').onclick = startTimer;
+            
+            // Remove celebration animation after 2 seconds
+            setTimeout(() => {
+                document.getElementById('timerCircle').classList.remove('celebrate');
+                resetTimer();
+            }, 2000);
+        }
+        
+        // ====================
+        // GARDEN FUNCTIONALITY
+        // ====================
+        function updateGarden() {
+            const gardenArea = document.getElementById('gardenArea');
+            
+            // Clear existing items
+            const existingSlots = gardenArea.querySelectorAll('.item-slot');
+            existingSlots.forEach(slot => slot.remove());
+            
+            // Create 4 empty slots
+            const slotPositions = [
+                { top: '20%', left: '20%' },
+                { top: '20%', left: '60%' },
+                { top: '50%', left: '20%' },
+                { top: '50%', left: '60%' }
+            ];
+            
+            // Create empty slots
+            slotPositions.forEach((pos, index) => {
+                const slot = document.createElement('div');
+                slot.className = 'item-slot';
+                slot.style.top = pos.top;
+                slot.style.left = pos.left;
+                slot.id = `slot-${index + 1}`;
+                
+                // Check if item exists in this slot
+                const itemInSlot = userData.gardenItems.find(item => item.slot === index + 1);
+                if (itemInSlot) {
+                    const storeItem = storeItems.find(si => si.id === itemInSlot.id);
+                    if (storeItem) {
+                        slot.innerHTML = storeItem.emoji;
+                        slot.style.border = '3px solid var(--mint)';
+                        slot.style.background = 'rgba(162, 228, 184, 0.3)';
+                        slot.title = storeItem.name;
+                    }
+                }
+                
+                gardenArea.appendChild(slot);
+            });
+        }
+        
+        // ====================
+        // STORE FUNCTIONALITY
+        // ====================
+        function loadStore() {
+            const storeGrid = document.getElementById('storeItems');
+            storeGrid.innerHTML = '';
+            
+            storeItems.forEach(item => {
+                const isOwned = userData.unlockedItems.includes(item.id);
+                const canAfford = userData.coins >= item.price;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'store-item';
+                itemElement.innerHTML = `
+                    <div class="item-emoji">${item.emoji}</div>
+                    <div style="font-weight: bold; color: var(--gray);">${item.name}</div>
+                    <div class="item-price">${item.price} 🎋</div>
+                    <button class="buy-btn" 
+                            onclick="buyItem(${item.id})" 
+                            ${isOwned ? 'disabled style="background:#ccc;"' : canAfford ? '' : 'disabled style="background:#ccc;"'}>
+                        ${isOwned ? 'Owned ✓' : canAfford ? 'Buy Now!' : 'Need More Coins'}
+                    </button>
+                `;
+                
+                storeGrid.appendChild(itemElement);
+            });
+            
+            document.getElementById('storeCoins').textContent = userData.coins;
+        }
+        
+        function buyItem(itemId) {
+            const item = storeItems.find(i => i.id === itemId);
+            
+            if (!item) return;
+            if (userData.unlockedItems.includes(itemId)) {
+                alert('You already own this item!');
+                return;
+            }
+            if (userData.coins < item.price) {
+                alert(`You need ${item.price - userData.coins} more coins!`);
+                return;
+            }
+            
+            // Deduct coins
+            userData.coins -= item.price;
+            userData.unlockedItems.push(itemId);
+            
+            // Add to garden
+            userData.gardenItems.push({
+                id: itemId,
+                slot: item.slot
+            });
+            
+            // Save and update
+            saveData();
+            updateCoinDisplay();
+            loadStore();
+            updateGarden();
+            
+            // Show success
+            alert(`You bought the ${item.name}! ${item.emoji}\nIt's now in your garden!`);
+        }
+        
+        // ====================
+        // UI UPDATES
+        // ====================
+        function updateCoinDisplay() {
+            document.getElementById('coinCount').textContent = userData.coins;
+            document.getElementById('storeCoins').textContent = userData.coins;
+        }
+        
+        function updateTotalTime() {
+            document.getElementById('totalTime').textContent = userData.totalMinutes;
+        }
+        
+        // ====================
+        // SCREEN MANAGEMENT
+        // ====================
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Deactivate all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected screen
+            document.getElementById(screenId).classList.add('active');
+            
+            // Activate corresponding nav button
+            const navIndex = { timer: 0, garden: 1, store: 2 }[screenId];
+            document.querySelectorAll('.nav-btn')[navIndex].classList.add('active');
+            
+            // Update garden/store when shown
+            if (screenId === 'garden') {
+                updateGarden();
+            } else if (screenId === 'store') {
+                loadStore();
+            }
+        }
+        
+        // ====================
+        // DATA STORAGE
+        // ====================
+        function saveData() {
+            localStorage.setItem('capybaraGardenData', JSON.stringify(userData));
+        }
+        
+        function loadData() {
+            const saved = localStorage.getItem('capybaraGardenData');
+            if (saved) {
+                userData = JSON.parse(saved);
+            }
+            updateCoinDisplay();
+            updateTotalTime();
+            updateGarden();
+        }
+        
+        // ====================
+        // TESTING FEATURES
+        // ====================
+        // Add this to your HTML if you want a secret test button
+        // <button onclick="addTestCoins()" style="position: fixed; bottom: 10px; right: 10px; padding: 5px 10px; background: gold; border: none; border-radius: 10px; cursor: pointer;">TEST: +100 Coins</button>
+        
+        function addTestCoins() {
+            userData.coins += 100;
+            saveData();
+            updateCoinDisplay();
+            alert("Added 100 test coins! 🎉");
+        }
+        
+        // ====================
+        // INITIALIZE APP
+        // ====================
+        window.onload = function() {
+            loadData();
+            setTimer(25); // Default to 25 minutes
+            updateGarden();
+            loadStore();
+            
+            // Add test button
+            const testBtn = document.createElement('button');
+            testBtn.textContent = "TEST: +100 Coins";
+            testBtn.style.cssText = 'position: fixed; bottom: 10px; right: 10px; padding: 5px 10px; background: gold; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; z-index: 1000;';
+            testBtn.onclick = addTestCoins;
+            document.body.appendChild(testBtn);
+        };
+        
+        // Make capybara interactive
+        document.addEventListener('DOMContentLoaded', function() {
+            const capybara = document.getElementById('capybara');
+            if (capybara) {
+                capybara.addEventListener('click', function() {
+                    alert('Hello! I\'m your capybara! Keep focusing to make our garden beautiful! 🦫💕');
+                });
+            }
+        });
+    </script>
+</body>
 </html>
